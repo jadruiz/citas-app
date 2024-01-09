@@ -7,10 +7,16 @@ import {
   FlatList,
 } from "react-native";
 import Formulario from "./src/components/Formulario";
+import Paciente from "./src/components/Paciente";
 
 export default function App() {
   const [modalVisible, setModalVisible] = useState(false);
   const [pacientes, setPacientes] = useState([]);
+  const [paciente, setPaciente] = useState({});
+  const pacienteEditar = (id) => {
+    const pacienteEditar = pacientes.filter((paciente) => paciente.id === id);
+    console.log(pacienteEditar[0]);
+  };
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.titulo}>
@@ -27,11 +33,18 @@ export default function App() {
         <Text style={styles.noPacientes}>No hay pacientes</Text>
       ) : (
         <FlatList
+          style={styles.listado}
           data={pacientes}
-          keyExtractor={(item) => {
-            item.id;
+          keyExtractor={(item) => item.id}
+          renderItem={(item) => {
+            return (
+              <Paciente
+                item={item}
+                setModalVisible={setModalVisible}
+                pacienteEditar={pacienteEditar}
+              />
+            );
           }}
-          renderItem={() => {}}
         />
       )}
       <Formulario
@@ -39,6 +52,7 @@ export default function App() {
         setModalVisible={setModalVisible}
         pacientes={pacientes}
         setPacientes={setPacientes}
+        paciente={paciente}
       />
     </SafeAreaView>
   );
@@ -78,5 +92,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 24,
     fontWeight: "600",
+  },
+  listado: {
+    marginTop: 20,
+    marginHorizontal: 30,
   },
 });

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Text,
   SafeAreaView,
@@ -17,13 +17,27 @@ const Formulario = ({
   setModalVisible,
   setPacientes,
   pacientes,
+  paciente: pacienteObj,
 }) => {
+  const [id, setId] = useState("");
   const [paciente, setPaciente] = useState("");
   const [propietario, setPropietario] = useState("");
   const [email, setEmail] = useState("");
   const [telefono, setTelefono] = useState("");
   const [sintomas, setSintomas] = useState("");
   const [fecha, setFecha] = useState(new Date());
+  useEffect(() => {
+    if (Object.keys(pacienteObj).lenght > 0) {
+      setId(pacienteObj.id);
+      setPaciente(pacienteObj.paciente);
+      setPropietario(pacienteObj.propietario);
+      setEmail(pacienteObj.email);
+      setTelefono(pacienteObj.telefono);
+      setSintomas(pacienteObj.sintomas);
+      setFecha(pacienteObj.fecha);
+    }
+  }, []);
+
   const handleNuevaCita = () => {
     if ([paciente, propietario, email, fecha, sintomas].includes("")) {
       Alert.alert("error", "Todos los campos son obligatorios");
