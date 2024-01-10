@@ -14,20 +14,22 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 
 const Formulario = ({
   modalVisible,
-  setModalVisible,
+  cerrarModal,
   setPacientes,
   pacientes,
   paciente: pacienteObj,
+  setPaciente: setPacienteApp,
 }) => {
-  const [id, setId] = useState("");
   const [paciente, setPaciente] = useState("");
+  const [id, setId] = useState("");
   const [propietario, setPropietario] = useState("");
   const [email, setEmail] = useState("");
   const [telefono, setTelefono] = useState("");
   const [sintomas, setSintomas] = useState("");
   const [fecha, setFecha] = useState(new Date());
+
   useEffect(() => {
-    if (Object.keys(pacienteObj).lenght > 0) {
+    if (Object.keys(pacienteObj).length > 0) {
       setId(pacienteObj.id);
       setPaciente(pacienteObj.paciente);
       setPropietario(pacienteObj.propietario);
@@ -36,7 +38,7 @@ const Formulario = ({
       setSintomas(pacienteObj.sintomas);
       setFecha(pacienteObj.fecha);
     }
-  }, []);
+  }, [pacienteObj]);
 
   const handleNuevaCita = () => {
     if ([paciente, propietario, email, fecha, sintomas].includes("")) {
@@ -51,8 +53,19 @@ const Formulario = ({
       fecha,
       sintomas,
     };
-    setPacientes([...pacientes, nuevoPaciente]);
-    setModalVisible(!modalVisible);
+    if (id) {
+      nuevoPaciente.id = id;
+      const pacientesActualizados = pacientes.map((pacienteState) =>
+        pacienteState.id === nuevoPaciente.id ? nuevoPaciente : pacienteState
+      );
+      setPacientes(pacientesActualizados);
+      setPacienteApp({});
+    } else {
+      nuevoPaciente.id = Date.now();
+      setPacientes([...pacientes, nuevoPaciente]);
+    }
+    cerrarModal();
+    setId("");
     setPaciente("");
     setPropietario("");
     setEmail("");
@@ -65,12 +78,21 @@ const Formulario = ({
       <SafeAreaView style={styles.contenido}>
         <ScrollView>
           <Text style={styles.titulo}>
-            Nueva <Text style={styles.tituloBold}>Cita</Text>
+            {pacienteObj.id ? "Editar" : "Nueva"}{" "}
+            <Text style={styles.tituloBold}>Cita</Text>
           </Text>
           <Pressable
             style={styles.btnCancelar}
             onLongPress={() => {
-              setModalVisible(false);
+              cerrarModal();
+              setPacienteApp({});
+              setId("");
+              setPaciente("");
+              setPropietario("");
+              setEmail("");
+              setTelefono("");
+              setFecha(new Date());
+              setSintomas("");
             }}
           >
             <Text style={styles.btnCancelarTexto}>X Cancelar</Text>
